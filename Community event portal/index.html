@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CityConnect — Local Community Event Portal</title>
+<style>
+/* ── Reset ── */
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0c0c14;
+  --bg2:#111120;
+  --card:#16162a;
+  --card2:#1c1c32;
+  --border:rgba(255,255,255,0.07);
+  --bh:rgba(255,255,255,0.15);
+  --acc:#a855f7;
+  --acc2:#ff6b35;
+  --txt:#ececf4;
+  --muted:#7272a0;
+  --dim:#2a2a45;
+  --ok:#4ade80;
+  --err:#f87171;
+  --r:14px;
+  --rs:8px;
+}
+body.light{
+  --bg:#f8f7f2;--bg2:#f0efe8;--card:#ffffff;--card2:#f2f1ec;
+  --border:rgba(0,0,0,0.07);--bh:rgba(0,0,0,0.13);
+  --txt:#0e0e1a;--muted:#5a5a7a;--dim:#c0c0d8;
+}
+body{
+  background:var(--bg);color:var(--txt);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.7;overflow-x:hidden;
+  transition:background .35s,color .35s;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--dim);border-radius:3px}
+
+/* ── Loader ── */
+#loader{
+  position:fixed;inset:0;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:9999;gap:1.2rem;transition:opacity .5s,visibility .5s;
+}
+#loader.hide{opacity:0;visibility:hidden;pointer-events:none;}
+.ld-ring{
+  width:50px;height:50px;border-radius:50%;
+  border:2px solid var(--dim);border-top-color:var(--acc);
+  animation:spin .7s linear infinite;
+}
+#loader p{font-size:1rem;letter-spacing:4px;color:var(--muted);text-transform:uppercase;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Nav ── */
+#hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 5%;position:sticky;top:0;z-index:500;
+  background:rgba(12,12,20,.9);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);transition:all .3s;
+}
+body.light #hdr{background:rgba(248,247,242,.9);}
+.brand{
+  font-size:1.25rem;font-weight:700;color:var(--txt);
+  text-decoration:none;display:flex;align-items:center;gap:.5rem;letter-spacing:-.3px;
+}
+.brand-dot{color:var(--acc);font-size:1.5rem;}
+nav{display:flex;gap:.1rem;flex-wrap:wrap;}
+nav a{
+  color:var(--muted);text-decoration:none;font-size:.875rem;
+  padding:.4rem .75rem;border-radius:var(--rs);transition:.2s;
+}
+nav a:hover{color:var(--txt);background:var(--border);}
+nav a.ext{color:var(--acc);}
+.nav-r{display:flex;gap:.5rem;align-items:center;}
+.icon-btn{
+  background:var(--card2);border:1px solid var(--border);
+  color:var(--txt);padding:.4rem .75rem;border-radius:var(--rs);
+  cursor:pointer;font-size:.95rem;transition:.2s;
+}
+.icon-btn:hover{background:var(--card);}
+.hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:.3rem;}
+.hbg span{width:22px;height:2px;background:var(--txt);border-radius:2px;transition:.3s;}
+
+/* ── Hero ── */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:120px 5% 80px;position:relative;overflow:hidden;
+}
+.hero-glow{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%,rgba(168,85,247,.08) 0%,transparent 65%),
+    radial-gradient(ellipse 50% 40% at 20% 80%,rgba(255,107,53,.05) 0%,transparent 60%);
+}
+.eyebrow{
+  display:flex;align-items:center;justify-content:center;gap:.6rem;
+  font-size:.75rem;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:1.5rem;flex-wrap:wrap;
+}
+.edot{
+  width:7px;height:7px;border-radius:50%;background:var(--acc);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{
+  font-size:clamp(3rem,8vw,6.5rem);font-weight:800;line-height:1.05;
+  letter-spacing:-3px;color:var(--txt);margin-bottom:1.5rem;
+}
+.hero h1 em{
+  font-style:italic;font-weight:300;color:var(--acc);
+  background:linear-gradient(135deg,var(--acc),#7c3aed);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{
+  font-size:1.05rem;color:var(--muted);max-width:480px;margin:0 auto 2rem;
+}
+.badge-pill{
+  display:inline-block;background:rgba(168,85,247,.1);
+  border:1px solid rgba(168,85,247,.25);color:var(--acc);
+  padding:.2rem .8rem;border-radius:50px;font-size:.78rem;font-weight:600;
+}
+.cta-row{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;}
+.stats-row{
+  display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;
+  margin-top:4rem;
+}
+.stat-chip{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:50px;padding:.5rem 1.3rem;font-size:.85rem;color:var(--muted);
+  transition:.2s;
+}
+.stat-chip:hover{border-color:var(--acc);}
+.stat-chip b{color:var(--txt);}
+.scroll-hint{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  font-size:.65rem;letter-spacing:3px;color:var(--dim);text-transform:uppercase;
+  animation:bob 2s ease-in-out infinite;
+}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+
+/* ── Buttons ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--acc);color:#0c0c14;font-weight:700;font-size:.88rem;
+  padding:.8rem 2rem;border:1.5px solid var(--acc);border-radius:50px;
+  cursor:pointer;text-decoration:none;letter-spacing:.2px;white-space:nowrap;
+  transition:transform .2s,box-shadow .2s;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(168,85,247,.2);}
+.btn:active{transform:translateY(0);}
+.btn.ghost{background:transparent;color:var(--txt);border-color:var(--bh);}
+.btn.ghost:hover{border-color:var(--acc);color:var(--acc);box-shadow:none;}
+.btn.sm{font-size:.78rem;padding:.55rem 1.2rem;}
+.btn.fw{width:100%;}
+
+/* ── Section base ── */
+section{padding:90px 5%;max-width:1280px;margin:0 auto;}
+.sec-tag{
+  font-size:.65rem;font-weight:700;letter-spacing:3px;
+  text-transform:uppercase;color:var(--acc);margin-bottom:.5rem;
+}
+.sec-head{text-align:center;margin-bottom:3rem;}
+.sec-head h2{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;letter-spacing:-1px;}
+.sec-head h2 em{color:var(--acc);font-style:normal;}
+.sec-sub{color:var(--muted);font-size:.95rem;margin-top:.5rem;}
+
+/* ── Filter bar ── */
+.filter-bar{display:flex;gap:1rem;margin-bottom:2.5rem;flex-wrap:wrap;align-items:center;}
+.search-box{
+  position:relative;flex:1;min-width:220px;
+}
+.search-box span{
+  position:absolute;left:1rem;top:50%;transform:translateY(-50%);
+  color:var(--muted);font-size:1.1rem;pointer-events:none;
+}
+.search-box input{
+  width:100%;padding:.75rem 1rem .75rem 2.7rem;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:50px;color:var(--txt);font-size:.9rem;outline:none;
+  transition:.2s;
+}
+.search-box input:focus{border-color:var(--acc);outline:2px solid rgba(168,85,247,.15);}
+.pills{display:flex;gap:.5rem;flex-wrap:wrap;}
+.pill{
+  background:var(--card);border:1px solid var(--border);
+  color:var(--muted);font-size:.8rem;font-weight:600;
+  padding:.45rem 1.1rem;border-radius:50px;cursor:pointer;transition:.2s;
+}
+.pill:hover,.pill.on{background:rgba(168,85,247,.1);border-color:var(--acc);color:var(--acc);}
+
+/* ── Event grid ── */
+.egrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+  gap:1.5rem;
+}
+.ecard{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:1.75rem;
+  position:relative;overflow:hidden;
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+  cursor:default;
+  opacity:0;transform:translateY(20px);
+}
+.ecard.visible{opacity:1;transform:translateY(0);}
+.ecard::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--acc),#7c3aed);
+  transform:scaleX(0);transform-origin:left;transition:.3s;
+}
+.ecard:hover{transform:translateY(-6px);border-color:var(--bh);box-shadow:0 24px 60px rgba(0,0,0,.4);}
+.ecard:hover::after{transform:scaleX(1);}
+.ecat{
+  font-size:.65rem;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--acc2);margin-bottom:.6rem;
+}
+.ecard h3{font-size:1.15rem;font-weight:700;margin-bottom:.4rem;color:var(--txt);}
+.emeta{font-size:.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.7;}
+.ebadge{font-size:.8rem;font-weight:600;margin-bottom:1.2rem;}
+.ebadge.ok{color:var(--ok);}
+.ebadge.err{color:var(--err);}
+
+/* ── Gallery ── */
+.gallery-wrap{max-width:100%;padding:90px 5%;}
+.gscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.gtable{
+  width:100%;border-collapse:collapse;min-width:700px;text-align:center;
+}
+.gtable caption{
+  font-size:.8rem;color:var(--muted);font-style:italic;
+  margin-bottom:1rem;caption-side:top;
+}
+.gtable td{padding:1rem;border:1px solid var(--border);background:var(--card);}
+.gtable tr:nth-child(even) td{background:var(--card2);}
+.gcard{cursor:zoom-in;}
+.gimg-wrap{position:relative;overflow:hidden;border-radius:var(--rs);}
+.gimg{
+  width:100%;height:170px;object-fit:cover;display:block;
+  border:2px solid var(--border);border-radius:var(--rs);
+  transition:transform .4s;
+}
+.gcard:hover .gimg{transform:scale(1.07);}
+.gov{
+  position:absolute;inset:0;background:rgba(168,85,247,.08);
+  display:flex;align-items:flex-end;padding:.6rem;
+  opacity:0;transition:.3s;
+}
+.gov span{
+  font-size:.7rem;color:var(--acc);background:rgba(12,12,20,.85);
+  padding:.2rem .55rem;border-radius:4px;
+}
+.gcard:hover .gov{opacity:1;}
+.glabel{font-size:.8rem;color:var(--muted);margin-top:.55rem;}
+.lbox{
+  position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.93);
+  display:none;align-items:center;justify-content:center;
+  cursor:zoom-out;
+}
+.lbox.on{display:flex;}
+.lbox-in{text-align:center;animation:popIn .2s ease;}
+@keyframes popIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+#lbImg{max-width:90vw;max-height:82vh;border-radius:var(--r);}
+#lbCap{color:var(--muted);font-size:.85rem;margin-top:.8rem;}
+.lbx-close{
+  position:absolute;top:-2.5rem;right:0;
+  background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;
+}
+
+/* ── Promo / video ── */
+.promo-wrap{
+  background:var(--card);border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:90px 5%;max-width:100%;
+}
+.promo-in{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1.5fr;gap:5rem;align-items:center;
+}
+.promo-txt h2{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;letter-spacing:-1px;}
+.promo-txt h2 em{color:var(--acc);font-style:normal;}
+.promo-txt p{color:var(--muted);margin-top:.8rem;}
+.vid-ready{color:var(--ok);font-size:.88rem;font-weight:600;margin-top:.8rem;}
+#promoVideo{
+  width:100%;border-radius:var(--r);
+  border:1px solid var(--border);display:block;
+}
+
+/* ── Form layout ── */
+.reg-wrap{max-width:1100px;margin:0 auto;}
+.form-grid{
+  display:grid;grid-template-columns:280px 1fr;gap:3rem;
+  margin-top:0;
+}
+.aside-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:2rem;margin-bottom:1.5rem;
+}
+.aside-icon{font-size:2.5rem;margin-bottom:1rem;line-height:1;color:var(--acc);}
+.aside-card h3{font-size:1rem;font-weight:700;margin-bottom:1rem;color:var(--txt);}
+.aside-list{list-style:none;}
+.aside-list li{
+  font-size:.85rem;color:var(--muted);padding:.5rem 0 .5rem 1.2rem;
+  border-bottom:1px solid var(--border);position:relative;
+}
+.aside-list li::before{content:'→';position:absolute;left:0;color:var(--acc);}
+.aside-list li:last-child{border-bottom:none;}
+.trk-card{
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:var(--r);padding:1.5rem;
+}
+.trk-lbl{
+  font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:.8rem;
+}
+.trk-row{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.82rem;padding:.35rem 0;border-bottom:1px solid var(--border);
+  color:var(--muted);
+}
+.trk-row:last-child{border-bottom:none;}
+.trk-row b{color:var(--acc);}
+.rform{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:2.5rem;
+}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.fg{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.4rem;}
+.fg label{
+  font-size:.72rem;font-weight:700;letter-spacing:.8px;
+  text-transform:uppercase;color:var(--muted);
+}
+.fg input,.fg select,.fg textarea{
+  background:var(--card2);border:1px solid var(--border);
+  color:var(--txt);padding:.75rem 1rem;border-radius:var(--rs);
+  font-size:.92rem;outline:none;width:100%;
+  transition:border-color .2s;font-family:inherit;
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{
+  border-color:var(--acc);outline:3px solid rgba(168,85,247,.12);
+}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--dim);}
+.errmsg{color:var(--err);font-size:.75rem;min-height:1em;}
+.fee-tag{font-size:.85rem;color:var(--acc);font-weight:600;margin-top:.3rem;}
+.chbar{height:2px;background:var(--dim);border-radius:2px;margin-top:.4rem;overflow:hidden;}
+.chfill{height:100%;background:var(--acc);width:0%;transition:width .2s,background .2s;border-radius:2px;}
+#charCount{font-size:.72rem;color:var(--muted);}
+.fcheck{
+  display:flex;align-items:center;gap:.6rem;
+  margin-bottom:1.5rem;font-size:.85rem;color:var(--muted);
+}
+.fcheck input{width:auto;}
+.fout{
+  display:block;margin-top:1rem;padding:.8rem 1rem;
+  border-radius:var(--rs);font-size:.88rem;font-weight:600;text-align:center;
+}
+.fout.ok{background:rgba(74,222,128,.1);color:var(--ok);border:1px solid rgba(74,222,128,.2);}
+.fout.bad{background:rgba(248,113,113,.1);color:var(--err);border:1px solid rgba(248,113,113,.2);}
+
+/* ── Feedback ── */
+.fb-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:3rem;
+  max-width:960px;margin:0 auto;
+}
+.fb-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:2rem;
+}
+.testi-wrap h3{font-size:1rem;font-weight:700;color:var(--txt);margin-bottom:1.5rem;}
+.testi{
+  border-left:2px solid var(--acc);
+  padding:.8rem 1.2rem;margin-bottom:1.2rem;
+}
+.testi p{font-size:.88rem;color:var(--muted);font-style:italic;line-height:1.6;}
+.testi span{font-size:.75rem;color:var(--dim);margin-top:.3rem;display:block;}
+
+/* ── Admin table ── */
+.admin-wrap{max-width:100%;padding:90px 5%;}
+.tbl-scroll{overflow-x:auto;}
+#adminTable{
+  width:100%;border-collapse:collapse;
+  text-align:center;font-size:.85rem;min-width:650px;
+}
+#adminTable th{
+  background:var(--card2);padding:.9rem 1rem;
+  border:1px solid var(--border);font-weight:700;
+  text-transform:uppercase;font-size:.68rem;letter-spacing:1px;color:var(--acc);
+}
+#adminTable td{
+  padding:.85rem 1rem;border:1px solid var(--border);
+  background:var(--card);color:var(--muted);transition:background .2s;
+}
+#adminTable tbody tr:nth-child(even) td{background:var(--card2);}
+#adminTable tbody tr:hover td{background:rgba(168,85,247,.04);}
+
+/* ── News bulletin — multi-column ── */
+.news-outer{background:var(--bg2);max-width:100%;padding:90px 5%;}
+.news-cols{
+  max-width:1200px;margin:0 auto;
+  column-count:2;column-gap:30px;
+  column-rule:1px solid var(--border);
+  text-align:justify;
+}
+.news-cols p{
+  font-size:.95rem;color:var(--muted);
+  margin-bottom:1.2rem;break-inside:avoid;line-height:1.9;
+}
+
+/* ── Contact / geo ── */
+.cta-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:2rem;max-width:1000px;margin:0 auto;
+}
+.geo-card,.pref-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:2.5rem;
+}
+.geo-card h2{font-size:1.9rem;font-weight:800;letter-spacing:-1px;margin-bottom:.8rem;}
+.geo-card h2 em{color:var(--acc);font-style:normal;}
+.geo-result{color:var(--acc);font-size:.88rem;font-weight:500;margin-top:1rem;min-height:1.4em;}
+.pref-card h3{font-size:1rem;font-weight:700;color:var(--txt);margin-bottom:.6rem;}
+.pref-row{
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:var(--rs);padding:.75rem 1rem;
+  display:flex;gap:.6rem;align-items:center;
+  font-size:.88rem;margin-bottom:1.5rem;
+}
+.pref-row span{color:var(--muted);}
+.pref-row b{color:var(--acc);}
+
+/* ── Footer ── */
+footer{
+  border-top:1px solid var(--border);
+  padding:3rem 5% 2rem;
+}
+.ft-top{
+  display:flex;justify-content:space-between;
+  align-items:flex-start;gap:3rem;flex-wrap:wrap;
+  margin-bottom:2.5rem;
+}
+.ft-brand{font-size:1.2rem;font-weight:700;color:var(--txt);}
+.ft-brand p{font-size:.82rem;color:var(--muted);font-weight:400;margin-top:.4rem;}
+.ft-nav{display:flex;gap:3rem;}
+.ft-nav ul{list-style:none;display:flex;flex-direction:column;gap:.55rem;}
+.ft-nav a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:.2s;}
+.ft-nav a:hover{color:var(--acc);}
+.ft-bot{
+  border-top:1px solid var(--border);padding-top:1.5rem;
+  text-align:center;font-size:.75rem;color:var(--dim);
+}
+
+/* ── Toast ── */
+#toast{
+  position:fixed;bottom:2rem;right:2rem;z-index:9000;
+  padding:.75rem 1.5rem;border-radius:50px;font-size:.85rem;font-weight:600;
+  opacity:0;transform:translateY(8px);pointer-events:none;
+  transition:opacity .3s,transform .3s;
+}
+#toast.on{opacity:1;transform:translateY(0);}
+#toast.ok{background:rgba(74,222,128,.95);color:#0c0c14;}
+#toast.bad{background:rgba(248,113,113,.95);color:#0c0c14;}
+
+/* ── Utilities ── */
+.hidden-visibility{visibility:hidden;}
+.hidden-display{display:none;}
+.mt1{margin-top:1rem;}
+
+/* ── Responsive ── */
+@media(max-width:1024px){
+  .form-grid{grid-template-columns:1fr;}
+  .promo-in{grid-template-columns:1fr;gap:2.5rem;}
+}
+@media(max-width:768px){
+  nav{
+    display:none;flex-direction:column;
+    position:fixed;inset:0;top:62px;background:var(--bg);
+    padding:2rem 5%;border-top:1px solid var(--border);z-index:490;
+  }
+  nav.open{display:flex;}
+  nav a{font-size:1.1rem;padding:.8rem 0;}
+  .hbg{display:flex;}
+  .hero h1{font-size:3rem;letter-spacing:-1.5px;}
+  .frow{grid-template-columns:1fr;}
+  .fb-grid{grid-template-columns:1fr;}
+  .cta-grid{grid-template-columns:1fr;}
+  .news-cols{column-count:1;}
+  .gimg{height:130px;}
+  section{padding:70px 5%;}
+  .hero{padding:90px 5% 60px;}
+}
+@media(max-width:480px){
+  .cta-row{flex-direction:column;align-items:center;}
+  .stats-row{gap:.5rem;}
+  .filter-bar{flex-direction:column;}
+  .egrid{grid-template-columns:1fr;}
+  .rform{padding:1.5rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- Loader -->
+<div id="loader"><div class="ld-ring"></div><p>CityConnect</p></div>
+
+<!-- ── HEADER ── -->
+<header id="hdr">
+  <a href="#home" class="brand"><span class="brand-dot">◈</span> CityConnect</a>
+  <nav id="mainNav">
+    <a href="#home">Home</a>
+    <a href="#events">Events</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#register">Register</a>
+    <a href="#feedback">Feedback</a>
+    <a href="#news">Bulletin</a>
+    <a href="#contact">Contact</a>
+    <a href="Help.html" target="_blank" class="ext">Help ↗</a>
+  </nav>
+  <div class="nav-r">
+    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()">☽</button>
+    <button class="hbg" id="hbg" onclick="toggleNav()"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<section id="home" class="hero" style="max-width:100%">
+  <div class="hero-glow"></div>
+  <div id="welcomeBanner">
+    <div class="eyebrow">
+      <span class="edot"></span>
+      Your city, your community &nbsp;
+      <!-- HTML Ex 3: inline style for special offer -->
+      <span style="color:#ff6b35;font-weight:700;">🎉 Summer Fest Open</span>
+    </div>
+    <h1>Events That<br/><em>Bring Us</em><br/>Together</h1>
+    <p class="hero-sub">
+      Discover, register, and celebrate local happenings — all in one place.
+    </p>
+    <!-- CSS Ex 3: .badge-pill class -->
+    <span class="badge-pill">✦ 500+ residents already registered</span>
+    <div class="cta-row">
+      <a href="#events" class="btn">Browse Events</a>
+      <a href="#register" class="btn ghost">Register Free →</a>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-chip"><b>24</b> Events This Month</div>
+    <div class="stat-chip"><b>6</b> Venues</div>
+    <div class="stat-chip"><b>1.2k</b> Participants</div>
+  </div>
+  <div class="scroll-hint">scroll ↓</div>
+</section>
+
+<!-- ── EVENTS ── -->
+<section id="events" style="padding-top:90px">
+  <div class="sec-head">
+    <div class="sec-tag">Upcoming</div>
+    <h2>Find Your <em>Next Event</em></h2>
+    <p class="sec-sub">Filter by category or search by name and location.</p>
+  </div>
+  <div class="filter-bar">
+    <div class="search-box">
+      <span>⌕</span>
+      <input type="text" id="searchInput" placeholder="Search events…" onkeyup="searchEvents()"/>
+    </div>
+    <div class="pills">
+      <button class="pill on" onclick="setCat(this,'all')">All</button>
+      <button class="pill" onclick="setCat(this,'music')">🎵 Music</button>
+      <button class="pill" onclick="setCat(this,'workshop')">🛠 Workshop</button>
+      <button class="pill" onclick="setCat(this,'sports')">🏃 Sports</button>
+      <button class="pill" onclick="setCat(this,'food')">🍜 Food</button>
+    </div>
+  </div>
+  <div id="eventsContainer" class="egrid"></div>
+  <div style="text-align:center;margin-top:2rem">
+    <button class="btn ghost sm" onclick="addDemoEvent()">+ Add Sample Event</button>
+  </div>
+</section>
+
+<!-- ── GALLERY ── -->
+<div class="gallery-wrap" id="gallery" style="max-width:100%">
+  <div class="sec-head">
+    <div class="sec-tag">Memories</div>
+    <h2>Event <em>Highlights</em></h2>
+    <p class="sec-sub">Double-click any image to enlarge.</p>
+  </div>
+  <div class="gscroll">
+    <!-- HTML Ex 4: table 2×3 with images -->
+    <table class="gtable">
+      <caption>Community Event Photo Gallery — 2024</caption>
+      <tr>
+        <td><div class="gcard" ondblclick="openLightbox('images/event1.jpg','Annual Music Fest 2024')">
+          <div class="gimg-wrap">
+            <img src="images/event1.jpg" alt="Annual Music Fest 2024" title="Annual Music Fest" class="gimg"/>
+            <div class="gov"><span>Double-click to enlarge</span></div>
+          </div><p class="glabel">Music Fest 2024</p></div></td>
+        <td><div class="gcard" ondblclick="openLightbox('images/event2.jpg','Baking Workshop')">
+          <div class="gimg-wrap">
+            <img src="images/event2.jpg" alt="Baking Workshop" title="Baking Workshop" class="gimg"/>
+            <div class="gov"><span>Double-click to enlarge</span></div>
+          </div><p class="glabel">Baking Workshop</p></div></td>
+        <td><div class="gcard" ondblclick="openLightbox('images/event3.jpg','City Marathon')">
+          <div class="gimg-wrap">
+            <img src="images/event3.jpg" alt="City Marathon" title="City Marathon" class="gimg"/>
+            <div class="gov"><span>Double-click to enlarge</span></div>
+          </div><p class="glabel">City Marathon</p></div></td>
+      </tr>
+      <tr>
+        <td><div class="gcard" ondblclick="openLightbox('images/event4.jpg','Food Festival')">
+          <div class="gimg-wrap">
+            <img src="images/event4.jpg" alt="Food Festival" title="Food Festival" class="gimg"/>
+            <div class="gov"><span>Double-click to enlarge</span></div>
+          </div><p class="glabel">Food Festival</p></div></td>
+        <td><div class="gcard" ondblclick="openLightbox('images/event5.jpg','Kids Art Show')">
+          <div class="gimg-wrap">
+            <img src="images/event5.jpg" alt="Kids Art Show" title="Kids Art Show" class="gimg"/>
+            <div class="gov"><span>Double-click to enlarge</span></div>
+          </div><p class="glabel">Kids Art Show</p></div></td>
+        <td><div class="gcard" ondblclick="openLightbox('images/event6.jpg','Tech Talk 2024')">
+          <div class="gimg-wrap">
+            <img src="images/event6.jpg" alt="Tech Talk 2024" title="Tech Talk" class="gimg"/>
+            <div class="gov"><span>Double-click to enlarge</span></div>
+          </div><p class="glabel">Tech Talk 2024</p></div></td>
+      </tr>
+    </table>
+  </div>
+  <!-- Lightbox -->
+  <div class="lbox" id="lbox" onclick="closeLightbox()">
+    <div class="lbox-in">
+      <img id="lbImg" src="" alt=""/>
+      <p id="lbCap"></p>
+      <button class="lbx-close">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── VIDEO PROMO ── -->
+<div class="promo-wrap" id="promo">
+  <div class="promo-in">
+    <div class="promo-txt">
+      <div class="sec-tag">Watch</div>
+      <h2>See What We're <em>All About</em></h2>
+      <p>A short look at what CityConnect brings to your neighbourhood.</p>
+      <p id="vidStatus" class="vid-ready"></p>
+    </div>
+    <div>
+      <!-- replace your <video> tag with this -->
+<iframe src="promo.html"
+        width="100%" 
+        style="aspect-ratio:16/9; border:none; border-radius:12px;">
+</iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ── REGISTER ── -->
+<section id="register">
+  <div class="sec-head">
+    <div class="sec-tag">Join Us</div>
+    <h2>Register for an <em>Event</em></h2>
+    <p class="sec-sub">Secure your spot in seconds.</p>
+  </div>
+  <div class="form-grid reg-wrap">
+    <!-- Form aside -->
+    <div>
+      <div class="aside-card">
+        <div class="aside-icon">◑</div>
+        <h3>Why Register?</h3>
+        <!-- CSS Ex 6: list-style-type none -->
+        <ul class="aside-list">
+          <li>Early-bird seat guarantee</li>
+          <li>Event reminders via email</li>
+          <li>Exclusive community perks</li>
+          <li>Track all your registrations</li>
+        </ul>
+      </div>
+      <div class="trk-card">
+        <p class="trk-lbl">Registrations This Session</p>
+        <div id="trkDisplay"><p style="font-size:.8rem;color:var(--dim)">None yet.</p></div>
+      </div>
+    </div>
+    <!-- Main form -->
+    <form id="regForm" class="rform" onsubmit="submitForm(event)">
+      <div class="frow">
+        <div class="fg">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" placeholder="e.g. Ananya Krishnan" required autofocus/>
+          <span class="errmsg" id="nameErr"></span>
+        </div>
+        <div class="fg">
+          <label for="emailAddr">Email Address</label>
+          <input type="email" id="emailAddr" placeholder="you@example.com" required/>
+          <span class="errmsg" id="emailErr"></span>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label for="phoneNo">Phone Number</label>
+          <!-- HTML Ex 6: onblur validation -->
+          <input type="tel" id="phoneNo" placeholder="+91 98765 43210" onblur="validatePhone()"/>
+          <span class="errmsg" id="phoneErr"></span>
+        </div>
+        <div class="fg">
+          <label for="eventDate">Preferred Date</label>
+          <input type="date" id="eventDate" required/>
+        </div>
+      </div>
+      <div class="fg">
+        <label for="eventType">Event Type</label>
+        <!-- HTML Ex 6: onchange shows fee -->
+        <select id="eventType" required onchange="showFee()">
+          <option value="">— Select an event —</option>
+          <option value="music">🎵 Music Festival</option>
+          <option value="workshop">🛠 Workshop</option>
+          <option value="sports">🏃 Sports Event</option>
+          <option value="food">🍜 Food Festival</option>
+        </select>
+        <div class="fee-tag" id="feeTag"></div>
+      </div>
+      <div class="fg">
+        <label for="msgBox">Message <span style="font-size:.7rem;font-weight:400;text-transform:none">(optional)</span></label>
+        <!-- HTML Ex 6: keyup char count -->
+        <textarea id="msgBox" rows="4" placeholder="Any special requests…" onkeyup="countChars()"></textarea>
+        <div class="chbar"><div class="chfill" id="chFill"></div></div>
+        <small id="charCount">0 / 300</small>
+      </div>
+      <!-- HTML Ex 8: localStorage -->
+      <div class="fcheck">
+        <input type="checkbox" id="savePrefs"/>
+        <label for="savePrefs">Remember my event preference for next visit</label>
+      </div>
+      <!-- HTML Ex 6: onclick submit -->
+      <button type="submit" id="regBtn" class="btn fw">Register Now →</button>
+      <!-- HTML Ex 5: output element -->
+      <output id="formOut" class="fout" style="min-height:0"></output>
+    </form>
+  </div>
+</section>
+
+<!-- ── FEEDBACK ── -->
+<section id="feedback">
+  <div class="sec-head">
+    <div class="sec-tag">Your Voice</div>
+    <h2>Share Your <em>Feedback</em></h2>
+    <p class="sec-sub">Help us make events even better.</p>
+  </div>
+  <div class="fb-grid">
+    <div class="fb-card">
+      <div class="fg"><label for="fbName">Your Name</label>
+        <input type="text" id="fbName" placeholder="Name (optional)"/></div>
+      <div class="fg"><label for="fbText">Your Feedback</label>
+        <textarea id="fbText" rows="5" placeholder="Tell us what you think…" onkeyup="countFb()"></textarea>
+        <small id="fbCount" style="font-size:.75rem;color:var(--muted)">0 characters</small>
+      </div>
+      <button class="btn" onclick="submitFeedback()">Submit Feedback →</button>
+      <p id="fbMsg" class="fout" style="min-height:0;margin-top:.8rem"></p>
+    </div>
+    <div class="testi-wrap">
+      <h3>What Others Say</h3>
+      <div class="testi"><p>"The food festival was absolutely incredible. Well-organised!"</p><span>— Priya M., Mylapore</span></div>
+      <div class="testi"><p>"Registered in 30 seconds. Loved the smooth process."</p><span>— Karthik R., Adyar</span></div>
+      <div class="testi"><p>"The baking workshop changed my Sunday mornings forever."</p><span>— Deepa S., T. Nagar</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ADMIN TABLE ── -->
+<div class="admin-wrap" id="admin" style="max-width:100%">
+  <div class="sec-head">
+    <div class="sec-tag">Admin</div>
+    <h2>Events <em>Overview</em></h2>
+    <p class="sec-sub">Live status of all events.</p>
+  </div>
+  <div class="tbl-scroll">
+    <!-- CSS Ex 7: styled table -->
+    <table id="adminTable">
+      <thead><tr>
+        <th>Event Name</th><th>Category</th><th>Date</th>
+        <th>Seats Left</th><th>Fee</th><th>Status</th>
+      </tr></thead>
+      <tbody id="adminBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── BULLETIN ── -->
+<!-- CSS Ex 9: multi-column -->
+<div class="news-outer" id="news">
+  <div class="sec-head" style="max-width:1200px;margin:0 auto 3rem">
+    <div class="sec-tag">Latest</div>
+    <h2>Community <em>Bulletin</em></h2>
+    <p class="sec-sub">Stay updated with local happenings.</p>
+  </div>
+  <div class="news-cols">
+    <p>The city council has announced the launch of a brand-new community sports complex near Adyar, set to open by August 2025. The facility will include a swimming pool, indoor badminton courts, and a jogging track open to all residents free of charge.</p>
+    <p>This year's Annual Music Fest promises over 20 local bands, food stalls, and a special children's zone. Volunteers are welcome — sign up at the community centre or through this portal before July 1st.</p>
+    <p>The Baking Workshop scheduled for July 14th is almost full. Expert pastry chefs from across Tamil Nadu will lead hands-on sessions for beginners and enthusiasts alike. Register now to secure your spot.</p>
+    <p>Local NGO GreenCity has partnered with the council to introduce weekly Sunday markets selling organic produce and handmade crafts at Marina Beach Road every Sunday from 7AM to 12PM.</p>
+    <p>Residents are reminded that the annual pothole repair drive in Mylapore and T. Nagar begins on June 20th. Please report road damage using the CityConnect app or the contact form on this portal.</p>
+    <p>The Tech Talk series kicks off on July 1st with a session on Cybersecurity for Citizens. Free entry for students with a valid ID. Seats are limited — register through this portal today to avoid disappointment.</p>
+  </div>
+</div>
+
+<!-- ── CONTACT / GEO ── -->
+<section id="contact">
+  <div class="cta-grid">
+    <!-- HTML Ex 9: Geolocation -->
+    <div class="geo-card">
+      <div class="sec-tag">Nearby</div>
+      <h2>Find Events <em>Near You</em></h2>
+      <p style="color:var(--muted);margin-bottom:1.5rem">Detect your location and see the closest events.</p>
+      <button class="btn" onclick="findNearby()">◎ Detect My Location</button>
+      <p id="geoResult" class="geo-result"></p>
+    </div>
+    <!-- HTML Ex 8: localStorage prefs -->
+    <div class="pref-card">
+      <div class="sec-tag">Settings</div>
+      <h3>Saved Preferences</h3>
+      <p style="color:var(--muted);margin-bottom:1rem;font-size:.88rem">We remember your event preference for a smoother return visit.</p>
+      <div class="pref-row">
+        <span>Preferred type:</span>
+        <b id="savedPref">None saved</b>
+      </div>
+      <button class="btn ghost sm" onclick="clearPrefs()">Clear All Preferences</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<!-- CSS Ex 6: list-style removed -->
+<footer>
+  <div class="ft-top">
+    <div class="ft-brand">
+      <span style="color:var(--acc)">◈</span> CityConnect
+      <p>Making communities stronger, one event at a time.</p>
+    </div>
+    <nav class="ft-nav">
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#register">Register</a></li>
+      </ul>
+      <ul>
+        <li><a href="#feedback">Feedback</a></li>
+        <li><a href="#news">Bulletin</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="help.html" target="_blank">Help ↗</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="ft-bot">© 2025 CityConnect. Local Community Event Portal. Chennai, Tamil Nadu.</div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+/* ── Ex 1: Basics ── */
+console.log("Welcome to the Community Portal");
+
+/* ── Ex 2: Data types & operators ── */
+const portalName = "CityConnect", launchDate = "2025-01-01";
+let totalSeats = 200;
+console.log(`${portalName} launched ${launchDate}. Seats: ${totalSeats}`);
+
+/* ── Ex 5: Constructor + Prototype ── */
+function Event(id,name,category,date,seats,fee,location){
+  this.id=id; this.name=name; this.category=category;
+  this.date=date; this.seats=seats; this.fee=fee; this.location=location;
+}
+Event.prototype.checkAvailability = function(){ return this.seats > 0; };
+
+/* ── Ex 6: Arrays ── */
+let evData = [
+  new Event(1,"Annual Music Fest","music","2025-08-10",80,150,"Marina Beach"),
+  new Event(2,"Baking Workshop","workshop","2025-07-14",15,200,"Community Centre"),
+  new Event(3,"City Marathon","sports","2025-09-05",200,0,"Adyar"),
+  new Event(4,"Street Food Festival","food","2025-08-22",500,50,"T. Nagar"),
+  new Event(5,"Tech Talk: Cyber","workshop","2025-07-01",40,0,"IIT Madras"),
+  new Event(6,"Kids Art Show","workshop","2025-10-12",60,30,"Mylapore Hall"),
+];
+
+function addEvent(ev){ evData.push(ev); } // .push()
+const getMusicEvents = () => evData.filter(e => e.category === "music"); // .filter()
+const formatCard = ev => `${ev.category}: ${ev.name}`; // .map()
+
+/* ── Ex 4: Closure — registration tracker ── */
+function makeTracker(){
+  const c={};
+  return {
+    register(cat){ c[cat]=(c[cat]||0)+1; },
+    getAll(){ return {...c}; }
+  };
+}
+const tracker = makeTracker();
+
+/* ── Ex 4: Higher-order filter + default params ── */
+const filterByCat = (arr, pred) => arr.filter(pred);
+
+function addNewEvent(name,category,date,seats=50,fee=0,location="TBD"){
+  const ev = new Event(evData.length+1,name,category,date,seats,fee,location);
+  addEvent(ev);
+  // Ex 5: Object.entries
+  Object.entries(ev).forEach(([k,v])=>console.log(`  ${k}:${v}`));
+  renderEvents(getFiltered()); renderAdmin();
+  toast(`"${name}" added!`,"ok");
+}
+function addDemoEvent(){ addNewEvent("New Community Event","workshop","2025-12-01",30,0,"City Hall"); }
+
+/* ── Ex 9: Async/Await ── */
+async function fetchDemo(){
+  try{
+    const r = await fetch("https://jsonplaceholder.typicode.com/todos/1");
+    const d = await r.json();
+    console.log("Async fetch:", d);
+  }catch(e){ console.error("Fetch error:",e); }
+}
+fetchDemo();
+
+/* ── Ex 9: Promises ── */
+fetch("https://jsonplaceholder.typicode.com/todos/2")
+  .then(r=>r.json())
+  .then(d=>console.log("Promise:",d))
+  .catch(e=>console.error(e));
+
+/* ── Ex 10: Spread + Destructuring ── */
+const cloneFilter = cat => [...evData].filter(e=>e.category===cat);
+const logFirst = ()=>{ const [f]=evData; const{name,date,location}=f; console.log(`First: ${name} @ ${location} on ${date}`); };
+
+/* ── Ex 7: DOM — render events ── */
+function renderEvents(list){
+  const c = document.getElementById("eventsContainer");
+  if(!c) return;
+  c.innerHTML="";
+  if(!list.length){
+    c.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:3rem 0">No events found.</p>';
+    return;
+  }
+  list.forEach(ev=>{
+    const past = new Date(ev.date)<new Date();
+    const avail = ev.checkAvailability();
+    const el = document.createElement("div");
+    el.className="ecard";
+    el.innerHTML=`
+      <div class="ecat">${ev.category}</div>
+      <h3>${ev.name}</h3>
+      <p class="emeta">
+        📅 ${ev.date}<br/>
+        📍 ${ev.location}<br/>
+        🎫 ${ev.fee===0?"FREE":"₹"+ev.fee}
+        ${past?'<br/><span style="color:var(--err);font-size:.72rem">● Past event</span>':''}
+      </p>
+      <p class="ebadge ${avail?"ok":"err"}">${avail?"✔ "+ev.seats+" seats available":"✘ Fully Booked"}</p>
+      <button class="btn sm${avail?"":" ghost"}" onclick="register(${ev.id})"
+        ${!avail?'disabled style="opacity:.4;cursor:not-allowed"':""}>
+        ${avail?"Register":"Sold Out"}
+      </button>`;
+    c.appendChild(el);
+    // scroll-reveal
+    setTimeout(()=>el.classList.add("visible"),50);
+  });
+}
+
+/* ── Ex 8: onclick register ── */
+function register(id){
+  try{
+    const ev = evData.find(e=>e.id===id);
+    if(!ev) throw new Error("Event not found.");
+    if(!ev.checkAvailability()) throw new Error("Fully booked.");
+    ev.seats--; totalSeats--;    // Ex 2: --
+    tracker.register(ev.category);
+    console.log(`Registered: ${ev.name}, seats left: ${ev.seats}`);
+    renderTrk(); renderEvents(getFiltered()); renderAdmin();
+    // Ex 12: POST
+    sendReg({eventName:ev.name,category:ev.category});
+    toast(`✔ Registered for "${ev.name}"`,"ok");
+  }catch(e){ console.error(e.message); toast("✘ "+e.message,"bad"); }
+}
+
+/* ── Render admin table ── */
+function renderAdmin(){
+  const tb = document.getElementById("adminBody");
+  if(!tb) return; tb.innerHTML="";
+  evData.forEach(ev=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${ev.name}</td><td>${ev.category}</td><td>${ev.date}</td>
+      <td>${ev.seats}</td><td>${ev.fee===0?"FREE":"₹"+ev.fee}</td>
+      <td>${ev.checkAvailability()?"✔ Open":"✘ Full"}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+/* ── Tracker display ── */
+function renderTrk(){
+  const el = document.getElementById("trkDisplay");
+  if(!el) return;
+  const all = tracker.getAll();
+  if(!Object.keys(all).length){ el.innerHTML='<p style="font-size:.8rem;color:var(--dim)">None yet.</p>'; return; }
+  el.innerHTML = Object.entries(all).map(([c,n])=>
+    `<div class="trk-row"><span>${c}</span><b>${n}</b></div>`).join('');
+}
+
+/* ── Filter / search ── */
+let activeCat = "all";
+function setCat(btn,cat){
+  activeCat=cat;
+  document.querySelectorAll(".pill").forEach(p=>p.classList.remove("on"));
+  btn.classList.add("on");
+  renderEvents(getFiltered());
+}
+function searchEvents(){ renderEvents(getFiltered()); }
+function getFiltered(){
+  const q=(document.getElementById("searchInput")?.value||"").toLowerCase();
+  return evData.filter(e=>{
+    const mc = activeCat==="all"||e.category===activeCat;
+    const mt = e.name.toLowerCase().includes(q)||e.location.toLowerCase().includes(q);
+    return mc&&mt;
+  });
+}
+
+/* ── Phone validation (onblur) ── */
+function validatePhone(){
+  const v=document.getElementById("phoneNo").value.trim();
+  const el=document.getElementById("phoneErr");
+  if(v&&!/^[+]?[\d\s\-]{7,15}$/.test(v)) el.textContent="Enter a valid phone number.";
+  else el.textContent="";
+}
+
+/* ── Show fee (onchange) ── */
+const fees={music:"₹150",workshop:"₹200",sports:"FREE",food:"₹50"};
+function showFee(){
+  const t=document.getElementById("eventType").value;
+  document.getElementById("feeTag").textContent=t?`Entry fee: ${fees[t]}`:"";
+}
+
+/* ── Char counter (onkeyup) ── */
+function countChars(){
+  const t=document.getElementById("msgBox").value;
+  const p=Math.min(t.length/300*100,100);
+  document.getElementById("chFill").style.width=p+"%";
+  document.getElementById("chFill").style.background=p>90?"var(--err)":"var(--acc)";
+  document.getElementById("charCount").textContent=`${t.length} / 300`;
+  if(t.length>300) document.getElementById("msgBox").value=t.slice(0,300);
+}
+function countFb(){
+  document.getElementById("fbCount").textContent=document.getElementById("fbText").value.length+" characters";
+}
+
+/* ── Ex 11: Form submit ── */
+function submitForm(e){
+  e.preventDefault();
+  const name=document.getElementById("fullName").value.trim();
+  const email=document.getElementById("emailAddr").value.trim();
+  const date=document.getElementById("eventDate").value;
+  const type=document.getElementById("eventType").value;
+  const out=document.getElementById("formOut");
+  let ok=true;
+  if(!name){ document.getElementById("nameErr").textContent="Name is required."; ok=false; }
+  else document.getElementById("nameErr").textContent="";
+  if(!email||!/\S+@\S+\.\S+/.test(email)){ document.getElementById("emailErr").textContent="Valid email required."; ok=false; }
+  else document.getElementById("emailErr").textContent="";
+  if(!ok) return;
+  if(document.getElementById("savePrefs").checked&&type){
+    localStorage.setItem("prefEvent",type); showSavedPref();
+  }
+  sendReg({name,email,date,eventType:type});
+  out.textContent=`🎉 Thank you, ${name}! Registered for "${type}" on ${date}.`;
+  out.className="fout ok";
+  e.target.reset();
+  document.getElementById("feeTag").textContent="";
+  document.getElementById("charCount").textContent="0 / 300";
+  document.getElementById("chFill").style.width="0%";
+}
+
+/* ── Ex 12: Fetch POST ── */
+async function sendReg(data){
+  console.log("[POST] Sending:",data);
+  try{
+    const r=await fetch("https://httpbin.org/post",{
+      method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)
+    });
+    const d=await r.json();
+    console.log("[POST] Response:",d.json||d);
+    setTimeout(()=>console.log("[POST] Confirmed."),1500);
+  }catch(e){ console.error("[POST] Error:",e); }
+}
+
+/* ── Feedback submit ── */
+function submitFeedback(){
+  const t=document.getElementById("fbText").value.trim();
+  const n=document.getElementById("fbName").value.trim();
+  const el=document.getElementById("fbMsg");
+  if(!t){ el.textContent="Please write something first."; el.className="fout bad"; return; }
+  el.textContent=`✔ Thank you${n?", "+n:""}! Feedback received.`;
+  el.className="fout ok";
+  document.getElementById("fbName").value="";
+  document.getElementById("fbText").value="";
+  document.getElementById("fbCount").textContent="0 characters";
+}
+
+/* ── Video events ── */
+function videoReady(){ document.getElementById("vidStatus").textContent="▶ Video ready to play!"; }
+
+/* ── Gallery lightbox (ondblclick) ── */
+function openLightbox(src,cap){
+  document.getElementById("lbImg").src=src;
+  document.getElementById("lbCap").textContent=cap;
+  document.getElementById("lbox").classList.add("on");
+}
+function closeLightbox(){ document.getElementById("lbox").classList.remove("on"); }
+
+/* ── Geolocation ── */
+function findNearby(){
+  const el=document.getElementById("geoResult");
+  el.textContent="📡 Detecting…";
+  if(!navigator.geolocation){ el.textContent="✘ Not supported."; return; }
+  navigator.geolocation.getCurrentPosition(
+    ({coords:{latitude:lat,longitude:lng,accuracy:acc}})=>{
+      el.textContent=`✔ ${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E (±${Math.round(acc)}m). Showing nearby events…`;
+    },
+    err=>{
+      const m={1:"Location access denied.",2:"Position unavailable.",3:"Request timed out."};
+      el.textContent="✘ "+(m[err.code]||"Unknown error.");
+    },
+    {enableHighAccuracy:true,timeout:8000,maximumAge:0}
+  );
+}
+
+/* ── localStorage prefs ── */
+function loadPrefs(){
+  const s=localStorage.getItem("prefEvent");
+  if(s){ const sel=document.getElementById("eventType"); if(sel) sel.value=s; showFee(); showSavedPref(); }
+}
+function showSavedPref(){
+  const s=localStorage.getItem("prefEvent");
+  const el=document.getElementById("savedPref");
+  if(el) el.textContent=s?s.charAt(0).toUpperCase()+s.slice(1):"None saved";
+}
+function clearPrefs(){
+  localStorage.clear(); sessionStorage.clear();
+  showSavedPref(); toast("Preferences cleared","ok");
+}
+
+/* ── Ex 10: Theme toggle ── */
+function toggleTheme(){
+  const {classList}=document.body; // destructuring
+  classList.toggle("light");
+  document.getElementById("themeBtn").textContent=classList.contains("light")?"☀":"☽";
+  localStorage.setItem("theme",classList.contains("light")?"light":"dark");
+}
+
+/* ── Mobile nav ── */
+function toggleNav(){ document.getElementById("mainNav").classList.toggle("open"); }
+
+/* ── Toast ── */
+function toast(msg,type){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.className=`on ${type}`;
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>t.className=type,3000);
+}
+
+/* ── Ex 13: Global error handler ── */
+window.onerror=(m,s,l)=>console.error(`[Error] ${m} at ${s}:${l}`);
+
+/* ── Sticky nav shadow ── */
+window.addEventListener("scroll",()=>{
+  document.getElementById("hdr").style.boxShadow=
+    window.scrollY>10?"0 2px 40px rgba(0,0,0,.5)":"none";
+});
+
+/* ── Ex 14: jQuery equivalent note ──
+  $('#regBtn').click(fn) === document.getElementById('regBtn').addEventListener('click',fn)
+  .fadeOut() = el.style.transition='opacity .5s'; el.style.opacity='0'
+  React/Vue benefit: component-based, virtual DOM, reactive state
+*/
+
+/* ── Init ── */
+window.addEventListener("load",()=>{
+  setTimeout(()=>document.getElementById("loader").classList.add("hide"),700);
+  if(localStorage.getItem("theme")==="light"){
+    document.body.classList.add("light");
+    document.getElementById("themeBtn").textContent="☀";
+  }
+  loadPrefs();
+  renderEvents(evData);
+  renderAdmin();
+  renderTrk();
+  logFirst();
+  console.log("Music events:",getMusicEvents().map(e=>e.name));
+  console.log("Sports clone:",cloneFilter("sports").map(e=>e.name));
+});
+</script>
+</body>
+</html>

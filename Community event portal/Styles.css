@@ -1,0 +1,895 @@
+/* ================================================================
+   styles.css — CityConnect Local Community Event Portal
+   CSS3 Exercises 1-11 covered
+   ================================================================ */
+
+/* CSS Exercise 3: Universal selector reset */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ----------------------------------------------------------------
+   CSS Variables
+   ---------------------------------------------------------------- */
+:root {
+  --bg:           #0a0a0f;
+  --bg2:          #111118;
+  --surface:      #16161f;
+  --surface2:     #1e1e2a;
+  --border:       rgba(255,255,255,0.07);
+  --border-hover: rgba(255,255,255,0.14);
+  --accent:       #c8f050;        /* lime green */
+  --accent-dim:   rgba(200,240,80,0.12);
+  --accent2:      #ff6b35;        /* orange */
+  --text:         #e8e8f0;
+  --text-muted:   #6b6b80;
+  --text-dim:     #3a3a50;
+  --success:      #4ade80;
+  --error:        #f87171;
+  --r:            14px;
+  --r-sm:         8px;
+  --font-head:    'Fraunces', Georgia, serif;
+  --font-body:    'Outfit', system-ui, sans-serif;
+  --transition:   0.25s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Light theme — CSS Exercise 10 */
+body.light {
+  --bg:         #f5f4ef;
+  --bg2:        #eeecea;
+  --surface:    #ffffff;
+  --surface2:   #f0efea;
+  --border:     rgba(0,0,0,0.08);
+  --border-hover: rgba(0,0,0,0.15);
+  --text:       #111118;
+  --text-muted: #666670;
+  --text-dim:   #bbbbc0;
+}
+
+/* ----------------------------------------------------------------
+   CSS Exercise 4: Body — background + fallback
+   ---------------------------------------------------------------- */
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(200,240,80,0.06) 0%, transparent 60%);
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+  transition: background-color 0.4s, color 0.4s;
+}
+
+/* ----------------------------------------------------------------
+   CSS Exercise 3: Element selectors
+   ---------------------------------------------------------------- */
+/* All <h2> */
+h2 {
+  font-family: var(--font-head);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--text);
+}
+h2 em { color: var(--accent); font-style: normal; }
+
+/* CSS Exercise 3: Group selector h3, p */
+h3 { font-family: var(--font-body); font-weight: 600; font-size: 1.1rem; }
+p  { color: var(--text-muted); }
+
+/* CSS Exercise 5: Typography properties */
+.section-tag {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--accent);
+  margin-bottom: 0.6rem;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-sub {
+  color: var(--text-muted);
+  margin-top: 0.6rem;
+  font-size: 1rem;
+  letter-spacing: 0.2px;
+}
+
+section {
+  padding: 100px 6%;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* ----------------------------------------------------------------
+   Cursor blob
+   ---------------------------------------------------------------- */
+.cursor-blob {
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,240,80,0.12), transparent 70%);
+  position: fixed;
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+  transition: left 0.1s, top 0.1s;
+  z-index: 0;
+}
+
+/* ----------------------------------------------------------------
+   Loader
+   ---------------------------------------------------------------- */
+.loader {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 9999;
+  gap: 1rem;
+  transition: opacity 0.5s, visibility 0.5s;
+}
+.loader.hide { opacity: 0; visibility: hidden; }
+.loader-ring {
+  width: 48px; height: 48px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.loader p { font-family: var(--font-head); font-size: 1.2rem; color: var(--text-muted); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ----------------------------------------------------------------
+   CSS Exercise 3: ID selector #mainHeader
+   ---------------------------------------------------------------- */
+#mainHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 6%;
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+body.light #mainHeader { background: rgba(245,244,239,0.88); }
+
+/* CSS Exercise 5: font on nav brand */
+.nav-brand {
+  font-family: var(--font-head);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 0.4rem;
+  letter-spacing: -0.3px;
+}
+.nav-brand span { color: var(--accent); font-size: 1.5rem; }
+
+/* CSS Exercise 6: link + pseudo-classes */
+#mainNav { display: flex; gap: 0.1rem; }
+
+#mainNav a:link,
+#mainNav a:visited {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 400;
+  padding: 0.45rem 0.8rem;
+  border-radius: var(--r-sm);
+  transition: color var(--transition), background var(--transition);
+}
+#mainNav a:hover  { color: var(--text); background: var(--border); }
+#mainNav a:active { color: var(--accent); }
+.nav-ext { color: var(--accent) !important; }
+
+.nav-actions { display: flex; align-items: center; gap: 0.5rem; }
+
+#themeToggle {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); padding: 0.4rem 0.7rem;
+  border-radius: var(--r-sm); cursor: pointer; font-size: 1rem;
+  transition: background var(--transition);
+}
+#themeToggle:hover { background: var(--surface); }
+
+.hamburger {
+  display: none; flex-direction: column; gap: 4px;
+  background: none; border: none; cursor: pointer; padding: 0.4rem;
+}
+.hamburger span {
+  width: 22px; height: 2px;
+  background: var(--text); border-radius: 2px;
+  transition: transform 0.3s;
+}
+
+/* ----------------------------------------------------------------
+   HERO
+   ---------------------------------------------------------------- */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 120px 6% 80px;
+  position: relative;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute; inset: 0; z-index: -1;
+  background:
+    radial-gradient(ellipse 60% 60% at 30% 50%, rgba(200,240,80,0.05) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 50% at 70% 50%, rgba(255,107,53,0.04) 0%, transparent 65%);
+}
+
+.eyebrow {
+  font-size: 0.8rem; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 2.5px;
+  color: var(--text-muted);
+  margin-bottom: 1.4rem;
+  display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.eyebrow-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+/* CSS Exercise 5: font-family, font-size, font-weight, font-style */
+.hero h1 {
+  font-family: var(--font-head);
+  font-size: clamp(3.5rem, 9vw, 7rem);
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1.05;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  letter-spacing: -2px;
+}
+.hero h1 em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--accent);
+}
+
+.hero-desc {
+  font-size: 1.05rem; color: var(--text-muted);
+  max-width: 500px; margin: 0 auto 2rem;
+  line-height: 1.7;
+}
+
+/* CSS Exercise 3: .highlight class */
+.highlight {
+  display: inline-block;
+  background: var(--accent-dim);
+  border: 1px solid rgba(200,240,80,0.25);
+  color: var(--accent);
+  padding: 0.2rem 0.8rem;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  margin-left: 0.3rem;
+}
+
+.hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+.hero-stats {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+  justify-content: center; margin-top: 4rem;
+}
+.stat-pill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 0.55rem 1.4rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: border-color var(--transition);
+}
+.stat-pill:hover { border-color: var(--accent); }
+.stat-pill strong { color: var(--text); font-weight: 600; }
+
+.scroll-hint {
+  position: absolute; bottom: 2rem;
+  font-size: 0.7rem; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--text-dim);
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(6px);} }
+
+/* ----------------------------------------------------------------
+   CSS Exercise 2: CTA Button (well-commented rule)
+   ---------------------------------------------------------------- */
+
+/* Style for main CTA button */
+.cta-button {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--accent);
+  color: #0a0a0f;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.8rem 2rem;
+  border: 1.5px solid var(--accent);
+  border-radius: 50px;
+  cursor: pointer;
+  text-decoration: none;
+  letter-spacing: 0.2px;
+  transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+  white-space: nowrap;
+}
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(200,240,80,0.2);
+}
+.cta-button:active { transform: translateY(0); }
+
+/* Ghost variant */
+.cta-button.ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border-hover);
+}
+.cta-button.ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: none;
+}
+
+.cta-button.small { font-size: 0.8rem; padding: 0.55rem 1.3rem; }
+.cta-button.full-width { width: 100%; }
+
+/* ----------------------------------------------------------------
+   Filter bar
+   ---------------------------------------------------------------- */
+.filter-bar {
+  display: flex; gap: 1rem; margin-bottom: 2.5rem;
+  align-items: center; flex-wrap: wrap;
+}
+.search-wrap {
+  position: relative; flex: 1; min-width: 220px;
+}
+.search-icon {
+  position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+  color: var(--text-muted); font-size: 1.2rem; pointer-events: none;
+}
+.search-wrap input {
+  width: 100%; padding: 0.75rem 1rem 0.75rem 2.6rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 50px; color: var(--text);
+  font-family: var(--font-body); font-size: 0.9rem;
+  transition: border-color var(--transition);
+  /* CSS Exercise 8: outline on focus */
+  outline: none;
+}
+.search-wrap input:focus { border-color: var(--accent); outline: 2px solid rgba(200,240,80,0.2); }
+
+.category-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+/* CSS Exercise 3: .pill class */
+.pill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.5rem 1.1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.pill:hover, .pill.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ----------------------------------------------------------------
+   CSS Exercise 3: .eventCard class selector
+   CSS Exercise 8: box model — border, padding, margin
+   ---------------------------------------------------------------- */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.eventCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.75rem;
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+  cursor: default;
+}
+.eventCard::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--transition);
+}
+.eventCard:hover {
+  transform: translateY(-5px);
+  border-color: var(--border-hover);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+}
+.eventCard:hover::before { transform: scaleX(1); }
+
+.eventCard .cat-tag {
+  font-size: 0.68rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--accent2); margin-bottom: 0.7rem;
+}
+.eventCard h3 { font-size: 1.2rem; margin-bottom: 0.4rem; color: var(--text); }
+.eventCard .event-meta {
+  font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.6;
+}
+.seats-badge { font-size: 0.82rem; font-weight: 500; margin-bottom: 1.2rem; }
+.seats-badge.ok { color: var(--success); }
+.seats-badge.low { color: var(--error); }
+
+/* ----------------------------------------------------------------
+   Gallery — HTML Exercise 4
+   ---------------------------------------------------------------- */
+.gallery-section { max-width: 100%; padding: 100px 6%; }
+
+.gallery-scroll-wrap { overflow-x: auto; }
+
+.gallery-table {
+  width: 100%; border-collapse: collapse; min-width: 700px;
+  text-align: center;
+}
+/* CSS Exercise 7: table caption */
+.gallery-table caption {
+  font-size: 0.82rem; color: var(--text-muted);
+  font-style: italic; margin-bottom: 1.2rem; caption-side: top;
+}
+/* CSS Exercise 7: table td border, padding, background */
+.gallery-table td {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  vertical-align: top;
+}
+/* CSS Exercise 7: zebra striping */
+.gallery-table tr:nth-child(even) td { background: var(--surface2); }
+
+.gallery-card { cursor: zoom-in; }
+
+.gallery-img-wrap { position: relative; overflow: hidden; border-radius: var(--r-sm); }
+
+/* CSS Exercise 3: .gallery-img class */
+.gallery-img {
+  width: 100%; height: 180px; object-fit: cover;
+  display: block;
+  transition: transform 0.4s;
+}
+.gallery-card:hover .gallery-img { transform: scale(1.06); }
+
+.gallery-overlay {
+  position: absolute; inset: 0;
+  background: rgba(200,240,80,0.08);
+  display: flex; align-items: flex-end;
+  opacity: 0; transition: opacity 0.3s;
+  padding: 0.75rem;
+}
+.gallery-overlay span {
+  font-size: 0.72rem; color: var(--accent);
+  background: rgba(10,10,15,0.85); padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+}
+.gallery-card:hover .gallery-overlay { opacity: 1; }
+
+.gallery-label {
+  font-size: 0.82rem; color: var(--text-muted);
+  margin-top: 0.6rem; text-align: center;
+}
+
+/* Lightbox */
+.lightbox {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(0,0,0,0.92);
+  display: none; align-items: center; justify-content: center;
+  cursor: zoom-out;
+}
+.lightbox.active { display: flex; }
+.lightbox-inner {
+  position: relative; text-align: center;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from{opacity:0;transform:scale(0.96);} to{opacity:1;transform:scale(1);} }
+#lightboxImg { max-width: 90vw; max-height: 82vh; border-radius: var(--r); }
+#lightboxCaption { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.75rem; }
+.lightbox-close {
+  position: absolute; top: -2.5rem; right: 0;
+  background: none; border: none; color: var(--text-muted);
+  font-size: 1.3rem; cursor: pointer;
+}
+
+/* ----------------------------------------------------------------
+   Promo / Video section
+   ---------------------------------------------------------------- */
+.promo-section {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 100px 6%; max-width: 100%;
+}
+.promo-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1.4fr; gap: 5rem; align-items: center;
+}
+.promo-text { }
+.promo-text h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
+.promo-text p { margin-top: 1rem; }
+.video-status-msg { color: var(--success); font-size: 0.9rem; font-weight: 500; margin-top: 1rem; }
+.promo-video-wrap { position: relative; }
+#promoVideo {
+  width: 100%; border-radius: var(--r);
+  border: 1px solid var(--border);
+  display: block;
+}
+
+/* ----------------------------------------------------------------
+   Registration Form
+   CSS Exercise 8: margin, padding, border, outline
+   ---------------------------------------------------------------- */
+.register-section { background: transparent; }
+
+.form-layout {
+  display: grid; grid-template-columns: 300px 1fr;
+  gap: 3rem; max-width: 1000px; margin: 0 auto;
+}
+
+.form-aside-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+.aside-icon {
+  font-size: 2.5rem; color: var(--accent); margin-bottom: 1rem; line-height: 1;
+}
+.form-aside-card h3 { color: var(--text); margin-bottom: 1rem; }
+
+/* CSS Exercise 6: list-style-type on aside-list */
+.aside-list {
+  list-style-type: none; padding: 0;
+}
+.aside-list li {
+  font-size: 0.88rem; color: var(--text-muted);
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  padding-left: 1.2rem; position: relative;
+}
+.aside-list li::before {
+  content: '→'; position: absolute; left: 0; color: var(--accent);
+}
+.aside-list li:last-child { border-bottom: none; }
+
+.tracker-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r); padding: 1.5rem;
+}
+.tracker-label {
+  font-size: 0.72rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--text-muted); margin-bottom: 0.8rem;
+}
+.tracker-item {
+  display: flex; justify-content: space-between;
+  font-size: 0.85rem; padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.tracker-item:last-child { border-bottom: none; }
+.tracker-item strong { color: var(--accent); }
+
+.reg-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 2.5rem;
+}
+
+.form-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;
+  margin-bottom: 0;
+}
+
+.form-group {
+  display: flex; flex-direction: column; gap: 0.4rem;
+  margin-bottom: 1.4rem;
+}
+
+.form-group label {
+  font-size: 0.78rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--text-muted);
+}
+.label-optional { font-size: 0.7rem; font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.75rem 1rem;
+  border-radius: var(--r-sm);
+  font-family: var(--font-body); font-size: 0.92rem;
+  transition: border-color var(--transition);
+  /* CSS Exercise 8: outline on focus */
+  outline: none;
+  width: 100%;
+}
+.form-group input::placeholder,
+.form-group textarea::placeholder { color: var(--text-dim); }
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--accent);
+  outline: 3px solid rgba(200,240,80,0.15);
+}
+
+.error-msg { color: var(--error); font-size: 0.78rem; min-height: 1em; }
+
+.fee-reveal {
+  font-size: 0.85rem; color: var(--accent); font-weight: 500;
+  margin-top: 0.3rem; min-height: 1.2em;
+}
+
+.char-bar {
+  height: 2px; background: var(--border); border-radius: 2px;
+  margin-top: 0.5rem; overflow: hidden;
+}
+.char-bar-fill {
+  height: 100%; background: var(--accent); width: 0%;
+  transition: width 0.2s, background 0.2s;
+  border-radius: 2px;
+}
+#charCount { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+.form-check {
+  display: flex; align-items: center; gap: 0.6rem;
+  margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-muted);
+}
+.form-check input { width: auto; }
+
+.form-output {
+  display: block; margin-top: 1rem;
+  padding: 0.8rem 1.1rem; border-radius: var(--r-sm);
+  font-size: 0.88rem; font-weight: 500; text-align: center;
+  min-height: 0;
+}
+.form-output.success {
+  background: rgba(74,222,128,0.1);
+  color: var(--success);
+  border: 1px solid rgba(74,222,128,0.25);
+}
+.form-output.error {
+  background: rgba(248,113,113,0.1);
+  color: var(--error);
+  border: 1px solid rgba(248,113,113,0.25);
+}
+
+/* ----------------------------------------------------------------
+   Feedback
+   ---------------------------------------------------------------- */
+.feedback-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 3rem; max-width: 960px; margin: 0 auto;
+}
+.feedback-form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r); padding: 2rem;
+}
+.testimonials h3 { color: var(--text); margin-bottom: 1.5rem; }
+.testimonial {
+  border-left: 2px solid var(--accent);
+  padding: 0.8rem 1.2rem; margin-bottom: 1.2rem;
+}
+.testimonial p { font-size: 0.9rem; color: var(--text-muted); font-style: italic; }
+.testimonial span { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.4rem; display: block; }
+.char-hint { font-size: 0.75rem; color: var(--text-muted); }
+
+/* ----------------------------------------------------------------
+   CSS Exercise 7: Admin Table
+   ---------------------------------------------------------------- */
+.admin-section { background: transparent; }
+.table-wrap { overflow-x: auto; }
+
+/* CSS Exercise 7: border, padding, background-color on table elements */
+#adminTable {
+  width: 100%; border-collapse: collapse;
+  text-align: center; font-size: 0.85rem;
+  min-width: 650px;
+}
+#adminTable th {
+  background: var(--surface2);
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--border);
+  font-weight: 600; text-transform: uppercase;
+  font-size: 0.7rem; letter-spacing: 1px;
+  color: var(--accent);
+}
+#adminTable td {
+  padding: 0.85rem 1.1rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  transition: background 0.2s;
+}
+/* CSS Exercise 7: zebra striping with nth-child */
+#adminTable tbody tr:nth-child(even) td { background: var(--surface2); }
+#adminTable tbody tr:hover td { background: rgba(200,240,80,0.04); }
+
+/* ----------------------------------------------------------------
+   CSS Exercise 9: Multi-column — Community Bulletin
+   ---------------------------------------------------------------- */
+.news-section { background: var(--bg2); max-width: 100%; padding: 100px 6%; }
+.news-section .section-header { max-width: 1200px; margin: 0 auto 3rem; }
+
+.news-columns {
+  max-width: 1200px; margin: 0 auto;
+  /* CSS Exercise 9: multi-column layout */
+  column-count: 2;
+  column-gap: 30px;
+  column-rule: 1px solid var(--border);
+  text-align: justify;
+}
+.news-columns p {
+  font-size: 0.95rem; color: var(--text-muted);
+  margin-bottom: 1.2rem; break-inside: avoid;
+  line-height: 1.8;
+}
+
+/* ----------------------------------------------------------------
+   Contact / Geo / Prefs
+   ---------------------------------------------------------------- */
+.contact-section { max-width: 1100px; }
+.contact-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+}
+.geo-card, .pref-card {
+  background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--r);
+  padding: 2.5rem;
+}
+.geo-card h2 { font-size: clamp(1.6rem,3vw,2.2rem); margin-bottom: 0.8rem; }
+.geo-card p, .pref-card p { margin-bottom: 1.5rem; }
+.geo-result {
+  margin-top: 1.2rem; font-size: 0.9rem;
+  color: var(--accent); font-weight: 500; min-height: 1.4em;
+}
+.pref-display {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 0.75rem 1rem;
+  font-size: 0.9rem; margin-bottom: 1.5rem;
+  display: flex; gap: 0.5rem; align-items: center;
+}
+.pref-label { color: var(--text-muted); }
+.pref-display strong { color: var(--accent); }
+.pref-card h3 { color: var(--text); margin-bottom: 0.6rem; }
+
+/* ----------------------------------------------------------------
+   Footer — CSS Exercise 6: list-style removed
+   ---------------------------------------------------------------- */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 3rem 6% 2rem;
+}
+.footer-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 3rem; margin-bottom: 2.5rem; flex-wrap: wrap;
+}
+.footer-brand {
+  font-family: var(--font-head); font-size: 1.3rem; font-weight: 700;
+  color: var(--text);
+}
+.footer-brand p { font-family: var(--font-body); font-size: 0.85rem; color: var(--text-muted); font-weight: 300; margin-top: 0.4rem; }
+.brand-icon { color: var(--accent); }
+
+.footer-nav { display: flex; gap: 3rem; }
+.footer-nav ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+/* CSS Exercise 6: visited, hover, link on footer */
+.footer-nav a:link,
+.footer-nav a:visited { color: var(--text-muted); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+.footer-nav a:hover  { color: var(--accent); }
+
+.footer-bottom {
+  border-top: 1px solid var(--border); padding-top: 1.5rem;
+  text-align: center;
+}
+.footer-bottom p { font-size: 0.78rem; color: var(--text-dim); }
+
+/* ----------------------------------------------------------------
+   CSS Exercise 8: visibility:hidden vs display:none (utility)
+   ---------------------------------------------------------------- */
+.hidden-visibility { visibility: hidden; }
+.hidden-display    { display: none; }
+
+/* Toast */
+#toast {
+  position: fixed; bottom: 2rem; right: 2rem; z-index: 8000;
+  padding: 0.85rem 1.5rem; border-radius: 50px;
+  font-size: 0.88rem; font-weight: 500;
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+#toast.show { opacity: 1; transform: translateY(0); }
+#toast.success { background: rgba(74,222,128,0.95); color: #0a0a0f; }
+#toast.error   { background: rgba(248,113,113,0.95); color: #0a0a0f; }
+
+/* ----------------------------------------------------------------
+   CSS Exercise 10: Media Queries — Responsive Design
+   ---------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .form-layout { grid-template-columns: 1fr; }
+  .form-aside { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .promo-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+}
+
+@media (max-width: 768px) {
+  /* Stack nav vertically */
+  #mainNav {
+    display: none; flex-direction: column;
+    position: fixed; inset: 0; top: 60px;
+    background: var(--bg); padding: 2rem 6%;
+    border-top: 1px solid var(--border); z-index: 99;
+  }
+  #mainNav.open { display: flex; }
+  #mainNav a:link,
+  #mainNav a:visited { font-size: 1.1rem; padding: 0.8rem 0; }
+  .hamburger { display: flex; }
+
+  /* Reduce font sizes */
+  h2 { font-size: 1.8rem; }
+  .hero h1 { font-size: 3rem; letter-spacing: -1px; }
+
+  /* Stack form rows */
+  .form-row { grid-template-columns: 1fr; }
+
+  /* Stack feedback grid */
+  .feedback-grid { grid-template-columns: 1fr; }
+  .contact-grid  { grid-template-columns: 1fr; }
+
+  /* Single column news */
+  .news-columns { column-count: 1; }
+
+  /* Reduce image sizes */
+  .gallery-img { height: 130px; }
+
+  section { padding: 70px 5%; }
+
+  /* Flexible using vw/vh */
+  .hero { padding: 80px 5% 60px; min-height: 90vh; }
+  .form-aside { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .hero-cta { flex-direction: column; align-items: center; }
+  .hero-stats { gap: 0.6rem; }
+  .filter-bar { flex-direction: column; }
+  .category-pills { justify-content: flex-start; }
+  .events-grid { grid-template-columns: 1fr; }
+  .reg-form { padding: 1.5rem; }
+}
